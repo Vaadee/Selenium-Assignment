@@ -1,10 +1,8 @@
 import time, requests
 from selenium import webdriver
-import numpy as np
 import pandas as pd
 import progressbar
 import csv
-
 
 widgets = [
     " [",
@@ -16,25 +14,8 @@ widgets = [
     ") ",
 ]
 
-masterLoadData = [
-    [
-        "Website",
-        "Link",
-        "Broadband Provider",
-        "Link Load Time (Average of 5 tries)",
-        "Link is dead or timed out (Y/N)",
-    ]
-]
-# masterSiteData = [
-#     [
-#         "Website",
-#         "Broadnand Provider",
-#         "Average Link Load Time",
-#         "Number of Dead Links/ Time Outs",
-#         "Number of Working Links",
-#         "Website Score",
-#     ]
-# ]
+masterLoadData = []
+masterSiteData = []
 
 websites = [
     "https://nrega.nic.in/netnrega/home.aspx",
@@ -42,18 +23,22 @@ websites = [
     "https://www.isro.gov.in/",
     "https://www.bits-pilani.ac.in/",
     "https://medium.com/",
-    # "https://swd.bits-hyderabad.ac.in/",
     # "https://cms.bits-hyderabad.ac.in/login/index.php",
+    # "https://swd.bits-hyderabad.ac.in/",
 ]
 
 driver = webdriver.Chrome()
-driver.minimize_window()
+driver.maximize_window()
+
+time = maxTime = 0
+minTime = 99999999
 
 for site in websites:
     driver.get(site)
     listOfWebsites = []
-    # siteData = []
+    siteData = []
     loadData = []
+    time = 0
     countValid = countInvalid = 0
     links = driver.find_elements_by_css_selector("a")
 
@@ -66,9 +51,15 @@ for site in websites:
         )
     )
 
-    bar = progressbar.ProgressBar(max_value=len(links), widgets=widgets).start()
+    bar = progressbar.ProgressBar(
+        max_value=len(listOfWebsites), widgets=widgets
+    ).start()
     for link in listOfWebsites:
-        bar.update(listOfWebsites.index(link))
+        try:
+            alert = Alert(driver)
+            alert.dismiss()
+        except:
+            pass
         try:
             tempTime = 0
             for count in range(5):
@@ -79,6 +70,10 @@ for site in websites:
                 domComplete = driver.execute_script(
                     "return window.performance.timing.domComplete"
                 )
+                while domComplete == 0:
+                    domComplete = driver.execute_script(
+                        "return window.performance.timing.domComplete"
+                    )
                 frontendPerformance_calc = domComplete - responseStart
                 tempTime += frontendPerformance_calc
             if requests.head(link).status_code in range(200, 400):
@@ -87,34 +82,69 @@ for site in websites:
             else:
                 countInvalid += 1
                 status = "Y"
-            loadData.append([site, link, "ACT-Fibernet", tempTime / 5, status])
+            masterLoadData.append([site, link, "ACT-Fibernet", tempTime / 5, status])
+            # print("[", site, link, "ACT-Fibernet", tempTime / 5, status, "]")
+            time += tempTime / 5
         except:
             countInvalid += 1
             status = "Y"
-            loadData.append([site, link, "ACT-Fibernet", "NA", status])
-
+            masterLoadData.append([site, "NA", "ACT-Fibernet", "NA", status])
+            # print("[", site, link, "ACT-Fibernet", "NA", status, "]")
+        bar.update(listOfWebsites.index(link))
     print(
         "\nComplete.\nThe count of valid links in {} is {} and invalid links is {}".format(
             site, countValid, countInvalid
         )
     )
-
-    # averageLinkLoadTime = loadData[1:, 3].mean()
-    # masterSiteData.append(
-    #     [site, "ACT Fibernet", averageLinkLoadTime, countInvalid, countValid, 0]
-    # )
-    for rowTemp in loadData:
-        masterLoadData.append(rowTemp)
+    averageLinkLoadTime = time / countValid
+    if averageLinkLoadTime < minTime:
+        minTime = averageLinkLoadTime
+    if averageLinkLoadTime > maxTime:
+        maxTime = averageLinkLoadTime
+    masterSiteData.append(
+        [
+            site,
+            "ACT Fibernet",
+            averageLinkLoadTime,
+            countInvalid,
+            countValid,
+        ]
+    )
 
 driver.quit()
-# masterSiteData = np.array(masterSiteData, dtype=dtypeMasterSiteData)
-# for row in masterSiteData:
-#     A = (row[2] - masterSiteData[1:, 2].min()) / (
-#         masterSiteData[1:, 2].max() - masterSiteData[1:, 2].min()
-#     )
-#     B = row[3] / (row[3] + row[4])
-#     row[5] = (A + B) / 2
-dataFrameLoadData = pd.DataFrame(masterLoadData)
-# dataFrameSiteData = pd.DataFrame(masterSiteData)
-dataFrameLoadData.to_csv("loadData.csv", index=False)
-# dataFrameSiteData.to_csv("siteData.csv".format)
+print(maxTime, minTime)
+for row in masterSiteData:
+    A = (float(row[2]) - minTime) / (maxTime - minTime)
+    B = float(row[3]) / (float(row[3]) + float(row[4]))
+    row.append((A + B) / 2)
+
+masterLoadData = pd.DataFrame(
+    masterLoadData,
+    columns=[
+        "Website",
+        "Link",
+        "Broadband Provider",
+        "Link Load Time (Average of 5 tries)",
+        "Link is dead or timed out (Y/N)",
+    ],
+)
+masterSiteData = pd.DataFrame(
+    masterSiteData,
+    columns=[
+        "Website",
+        "Broadnand Provider",
+        "Average Link Load Time",
+        "Number of Dead Links/ Time Outs",
+        "Number of Working Links",
+        "Website Score",
+    ],
+)
+masterSiteData.sort_values(by=["Website Score"])
+masterLoadData.to_csv(
+    "loadData.csv",
+    index=False,
+)
+masterSiteData.to_csv(
+    "siteData.csv",
+    index=False,
+)
