@@ -1,0 +1,15 @@
+0,1,2,3,4
+Website,Link,Broadband Provider,Link Load Time (Average of 5 tries),Link is dead or timed out (Y/N)
+https://swd.bits-hyderabad.ac.in/,https://swd.bits-hyderabad.ac.in/FAQs,ACT-Fibernet,294.8,N
+https://swd.bits-hyderabad.ac.in/,https://swd.bits-hyderabad.ac.in/official,ACT-Fibernet,149.8,N
+https://swd.bits-hyderabad.ac.in/,https://swd.bits-hyderabad.ac.in/login-page,ACT-Fibernet,381.8,N
+https://swd.bits-hyderabad.ac.in/,https://swd.bits-hyderabad.ac.in/mail%20to=ssd@hyderabad.bits-pilani.ac.in?sub=query,ACT-Fibernet,166.2,N
+https://swd.bits-hyderabad.ac.in/,mailto:swdnucleus@hyderabad.bits-pilani.ac.in?subject=Query,ACT-Fibernet,NA,Y
+https://swd.bits-hyderabad.ac.in/,https://live.quickfms.com/login.aspx,ACT-Fibernet,2138.2,N
+https://cms.bits-hyderabad.ac.in/login/index.php,https://cms.bits-hyderabad.ac.in/login/index.php#maincontent,ACT-Fibernet,394.4,N
+https://cms.bits-hyderabad.ac.in/login/index.php,https://cms.bits-hyderabad.ac.in/login/forgot_password.php,ACT-Fibernet,225.6,N
+https://cms.bits-hyderabad.ac.in/login/index.php,,ACT-Fibernet,NA,Y
+https://cms.bits-hyderabad.ac.in/login/index.php,https://cms.bits-hyderabad.ac.in/auth/oauth2/login.php?id=1&wantsurl=%2F&sesskey=NidAtkFOVB,ACT-Fibernet,343.4,Y
+https://cms.bits-hyderabad.ac.in/login/index.php,https://cms.bits-hyderabad.ac.in/,ACT-Fibernet,180.2,N
+https://cms.bits-hyderabad.ac.in/login/index.php,https://cms.bits-hyderabad.ac.in/admin/tool/dataprivacy/summary.php,ACT-Fibernet,136.2,N
+https://cms.bits-hyderabad.ac.in/login/index.php,https://play.google.com/store/apps/details?id=crux.bphc.cms&hl=en,ACT-Fibernet,1947.8,N
