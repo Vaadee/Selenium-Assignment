@@ -1,6 +1,6 @@
 Website,Broadnand Provider,Average Link Load Time,Number of Dead Links/ Time Outs,Number of Working Links,Website Score
-https://nrega.nic.in/netnrega/home.aspx,ACT Fibernet,813.6735849056602,31,106,0.3912124324138827
-https://www.usa.gov/,ACT Fibernet,441.11301247771826,0,561,0.06359660122188862
-https://www.isro.gov.in/,ACT Fibernet,1199.1737373737374,13,99,0.5580357142857143
-https://www.bits-pilani.ac.in/,ACT Fibernet,330.6416326530614,23,490,0.022417153996101363
-https://medium.com/,ACT Fibernet,614.5214285714286,0,28,0.1634250446099884
+https://www.bits-pilani.ac.in/,ACT Fibernet,404.8240816326529,23,490,0.022417153996101363
+https://www.usa.gov/,ACT Fibernet,609.4951871657751,0,561,0.1240109388472602
+https://medium.com/,ACT Fibernet,802.3626262626262,0,198,0.24086999490779762
+https://nrega.nic.in/netnrega/home.aspx,ACT Fibernet,912.9180952380955,32,105,0.4246442614861744
+https://www.isro.gov.in/,ACT Fibernet,1230.0380000000002,12,100,0.5535714285714286

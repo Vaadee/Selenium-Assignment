@@ -1,10 +1,8 @@
 import time, requests
 from selenium import webdriver
 import pandas as pd
-import numpy as np
 import progressbar
 import csv
-from selenium.webdriver.chrome.options import Options
 
 widgets = [
     " [",
@@ -29,42 +27,27 @@ websites = [
     # "https://swd.bits-hyderabad.ac.in/",
 ]
 
-options = Options()
-options.add_argument("ignore-certificate-errors")
-options.add_argument("--allow-running-insecure-content")
-
-driver = webdriver.Chrome(chrome_options=options)
+driver = webdriver.Chrome()
 driver.maximize_window()
 
-timeCalc = maxTime = 0
+time = maxTime = 0
 minTime = 99999999
 
 for site in websites:
     driver.get(site)
     listOfWebsites = []
-    websiteCount = []
     siteData = []
     loadData = []
-    timeCalc = 0
+    time = 0
     countValid = countInvalid = 0
     links = driver.find_elements_by_css_selector("a")
-    while len(links) < 100:
-        try:
-            driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
-            links = driver.find_elements_by_css_selector("a")
-            time.sleep(0.5)
-        except:
-            break
+
     for testLink in links:
-        if testLink.get_attribute("href") not in listOfWebsites:
-            listOfWebsites.append(testLink.get_attribute("href"))
-            websiteCount.append(1)
-        else:
-            index = listOfWebsites.index(testLink.get_attribute("href"))
-            websiteCount[index] += 1
+        # if testLink.get_attribute("href") not in listOfWebsites:
+        listOfWebsites.append(testLink.get_attribute("href"))
     print(
         "Currently testing site {}, the total number of links is {} so this could take a while.".format(
-            site, len(links)
+            site, len(listOfWebsites)
         )
     )
 
@@ -72,7 +55,6 @@ for site in websites:
         max_value=len(listOfWebsites), widgets=widgets
     ).start()
     for link in listOfWebsites:
-        index = listOfWebsites.index(link)
         try:
             alert = Alert(driver)
             alert.dismiss()
@@ -95,16 +77,16 @@ for site in websites:
                 frontendPerformance_calc = domComplete - responseStart
                 tempTime += frontendPerformance_calc
             if requests.head(link).status_code in range(200, 400):
-                countValid += 1 * websiteCount[index]
+                countValid += 1
                 status = "N"
             else:
-                countInvalid += 1 * websiteCount[index]
+                countInvalid += 1
                 status = "Y"
             masterLoadData.append([site, link, "ACT-Fibernet", tempTime / 5, status])
             # print("[", site, link, "ACT-Fibernet", tempTime / 5, status, "]")
-            timeCalc += (tempTime / 5) * websiteCount[index]
+            time += tempTime / 5
         except:
-            countInvalid += 1 * websiteCount[index]
+            countInvalid += 1
             status = "Y"
             masterLoadData.append([site, "NA", "ACT-Fibernet", "NA", status])
             # print("[", site, link, "ACT-Fibernet", "NA", status, "]")
@@ -114,7 +96,7 @@ for site in websites:
             site, countValid, countInvalid
         )
     )
-    averageLinkLoadTime = timeCalc / countValid
+    averageLinkLoadTime = time / countValid
     if averageLinkLoadTime < minTime:
         minTime = averageLinkLoadTime
     if averageLinkLoadTime > maxTime:
@@ -157,7 +139,7 @@ masterSiteData = pd.DataFrame(
         "Website Score",
     ],
 )
-masterSiteData = masterSiteData.sort_values(by=["Website Score"])
+masterSiteData.sort_values(by=["Website Score"])
 masterLoadData.to_csv(
     "loadData.csv",
     index=False,
