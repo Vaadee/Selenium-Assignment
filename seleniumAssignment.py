@@ -14,7 +14,7 @@ widgets = [
     ") ",
 ]
 
-# Initializing the required lists
+# Initializing the required lists and variables
 masterLoadData = []
 masterSiteData = []
 websites = [
