@@ -45,20 +45,24 @@ for site in websites:
     websiteCount = []
     siteData = []
     loadData = []
-    timeCalc = 0
+    timeCalc = height = 0
     countValid = countInvalid = 0
     links = driver.find_elements_by_css_selector("a")
 
     # Checking if the list of links is less than 100. (Helpful for websites with lazy scroll)
-    while len(links) < 100:
+    while (
+        len(links) < 100
+        and driver.execute_script("return document.body.scrollHeight") != height
+    ):
         try:
+            height = driver.execute_script("return document.body.scrollHeight")
             driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
             links = driver.find_elements_by_css_selector("a")
             time.sleep(0.5)
         except:
             break
 
-    # Capturing unique set of links from the main website. This helps reduce the redundency in testing the same link multiple times.
+    # Captures unique set of links and the number of times they were used from the main website.
     for testLink in links:
         if testLink.get_attribute("href") not in listOfWebsites:
             listOfWebsites.append(testLink.get_attribute("href"))
@@ -67,7 +71,7 @@ for site in websites:
             index = listOfWebsites.index(testLink.get_attribute("href"))
             websiteCount[index] += 1
 
-    # Prints the current state of the website to the console.
+    # Prints the current state of the program to console
     print(
         "Currently testing site {}, the total number of links is {} so this could take a while.".format(
             site, len(links)
@@ -126,7 +130,7 @@ for site in websites:
         )
     )
 
-    # Final calculations before the array is converted DataFrame
+    # Link load time calculations
     averageLinkLoadTime = timeCalc / countValid
     if averageLinkLoadTime < minTime:
         minTime = averageLinkLoadTime
@@ -151,7 +155,7 @@ for row in masterSiteData:
     B = float(row[3]) / (float(row[3]) + float(row[4]))
     row.append((A + B) / 2)
 
-# Transforms the array to FataFrame. Makes it easier to save to a CSV file
+# Transforms the array to DataFrame. Makes it easier to save to a CSV file
 masterLoadData = pd.DataFrame(
     masterLoadData,
     columns=[
